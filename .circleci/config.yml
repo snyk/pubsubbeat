@@ -13,6 +13,7 @@ jobs:
             - run: |
                 docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
     push:
+        machine: true
         steps:
             - docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
 workflows:
@@ -20,4 +21,6 @@ workflows:
     build_and_push:
         jobs:
             - build
-            - push
+            - push:
+                requires:
+                    - build

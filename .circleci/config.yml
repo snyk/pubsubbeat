@@ -5,4 +5,4 @@ jobs:
         steps:
             - checkout
             - run: |
-                docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
+                docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .

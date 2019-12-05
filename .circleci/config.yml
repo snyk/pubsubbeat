@@ -15,7 +15,7 @@ jobs:
     push:
         steps:
             - docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
-workflow:
+workflows:
     version: 2
     build_and_push:
         jobs:

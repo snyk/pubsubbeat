@@ -22,5 +22,6 @@ workflows:
         jobs:
             - build
             - push:
+                context: snyk-docker-build
                 requires:
                     - build

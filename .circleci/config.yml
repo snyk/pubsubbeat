@@ -29,7 +29,7 @@ jobs:
         steps:
             - setup_remote_docker
             - restore_cache:
-                key: key: v1-{{.Branch}}
+                key: v1-{{.Branch}}
             - run:
                 name: Restore Docker image cache
                 command: docker loag -i ~/pubsubbeat/cache/docker.tar

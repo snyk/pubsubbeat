@@ -18,6 +18,14 @@ defaults: &default
         auth:
             username: _json_key
             password: $GCLOUD_GCR_BUILDER
+    commands:
+        gcr_auth:
+            description: "Auth GCR"
+            steps:
+                - setup_remote_docker
+                - run:
+                    name: GCR auth
+                    command: echo $GCLOUD_GCR_BUILDER | docker login -u _json_key --password-stdin https://gcr.io/snyk-main
 version: 2
 jobs:
     build:

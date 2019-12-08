@@ -17,7 +17,7 @@ jobs:
             - run: docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
             - run: 
                 name: docker save gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} 
-                command: mkdir -p ~/pubsubbeat/cache; docker save -o ~/pubsubbeat/cache.docker.tar "gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}"
+                command: mkdir -p ~/pubsubbeat/cache; docker save -o ~/pubsubbeat/cache/docker.tar "gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}"
             - save_cache:
                 key: v1-{{ .Branch }}-{{ .Environment.CIRCLE_TAG }}-{{ epoch }}
                 paths:

@@ -24,9 +24,9 @@ jobs:
         working_directory: ~/pubsubbeat
         docker:
             - image: docker:18.02.0-ce
-              <<: *private_repo_auth
         steps:
             - checkout
+            - gcr_auth
             - setup_remote_docker:
                 docker_layer_caching: true
             - run: docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
@@ -42,7 +42,6 @@ jobs:
     push:
         docker:
             - image: docker:18.02.0-ce
-              <<: *private_repo_auth
         steps:
             - setup_remote_docker:
                 docker_layer_caching: true

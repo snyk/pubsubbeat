@@ -8,21 +8,34 @@ version: 2
 jobs:
     build:
         working_directory: ~/pubsubbeat
-        machine: true
+        docker:
+            - image: docker:18.02.0-ce
         steps:
             - checkout
-            - setup_remote_docker:
-                docker_layer_caching: true
-            - run: |
-                docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
+            - setup_remote_docker
+            - run: docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
+            - run: 
+                name: docker save gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} 
+                command: mkdir -p ~/pubsubbeat/cache; docker save -o ~/pubsubbeat/cache.docker.tar "gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}"
+            - save_cache:
+                key: v1-{{ .Branch }}-{{ .Environment.CIRCLE_TAG }}-{{ epoch }}
+                paths:
+                    - ~/pubsubbeat/cache/docker.tar
             - attach_workspace:
                 at: ~/pubsubbeat
     push:
-        machine: true
+        docker:
+            - image: docker:18.02.0-ce
         steps:
-            - attach_workspace:
-                at: ~/pubsubbeat
-            - run: docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
+            - setup_remote_docker
+            - restore_cache:
+                key: key: v1-{{.Branch}}
+            - run:
+                name: Restore Docker image cache
+                command: docker loag -i ~/pubsubbeat/cache/docker.tar
+            - run: 
+                name: push to gcr.io
+                command: docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
 workflows:
     version: 2
     build_and_push:

@@ -1,5 +1,8 @@
-defaults: &default
-    resource_class: small
+private_repo_auth: &private_reop_auth
+  auth:
+    username: _json_key
+    password: $GCLOUD_GCR_BUILDER
+commands:
     gcr_auth:
         description: Auth GCR
         steps:
@@ -7,6 +10,10 @@ defaults: &default
           - run:
               name: GCR auth
               command: echo $GCLOUD_GCR_BUILDER | docker login -u _json_key --password-stdin https://gcr.io/snyk-main
+
+
+defaults: &default
+    resource_class: small
     docker:
         auth:
             username: _json_key
@@ -17,9 +24,9 @@ jobs:
         working_directory: ~/pubsubbeat
         docker:
             - image: docker:18.02.0-ce
+              <<: *private_repo_auth
         steps:
             - checkout
-            - gcr_auth #remove, for debugging
             - setup_remote_docker:
                 docker_layer_caching: true
             - run: docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
@@ -35,6 +42,7 @@ jobs:
     push:
         docker:
             - image: docker:18.02.0-ce
+              <<: *private_repo_auth
         steps:
             - setup_remote_docker:
                 docker_layer_caching: true
@@ -43,7 +51,7 @@ jobs:
             - run:
                 name: Restore Docker image cache
                 command: docker load -i ~/pubsubbeat/cache/docker.tar
-            - gcr_auth
+            - 
             - run: 
                 name: push to gcr.io
                 command: docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
@@ -56,3 +64,7 @@ workflows:
                 context: snyk-docker-build
                 requires:
                     - build
+                filters:
+                    branches:
+                        only:
+                            - master

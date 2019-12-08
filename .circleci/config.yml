@@ -1,4 +1,4 @@
-private_repo_auth: &private_reop_auth
+private_repo_auth: &private_repo_auth
   auth:
     username: _json_key
     password: $GCLOUD_GCR_BUILDER

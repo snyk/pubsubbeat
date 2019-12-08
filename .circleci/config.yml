@@ -12,7 +12,8 @@ jobs:
             - image: docker:18.02.0-ce
         steps:
             - checkout
-            - setup_remote_docker
+            - setup_remote_docker:
+                docker_layer_caching: true
             - run: docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
             - run: 
                 name: docker save gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} 
@@ -27,12 +28,13 @@ jobs:
         docker:
             - image: docker:18.02.0-ce
         steps:
-            - setup_remote_docker
+            - setup_remote_docker:
+                docker_layer_caching: true
             - restore_cache:
                 key: v1-{{.Branch}}
             - run:
                 name: Restore Docker image cache
-                command: docker loag -i ~/pubsubbeat/cache/docker.tar
+                command: docker load -i ~/pubsubbeat/cache/docker.tar
             - run: 
                 name: push to gcr.io
                 command: docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}

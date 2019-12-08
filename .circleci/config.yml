@@ -1,5 +1,6 @@
 defaults: &default
     resource_class: small
+    working_directory: ~/pubsubbeat
     docker:
         auth:
             username: _json_key
@@ -12,13 +13,13 @@ jobs:
             - checkout
             - run: |
                 docker build -t gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1} .
-            - persist_to_workspace:
-                root: ~
+            - attach_workspace:
+                at: ~/pubsubbeat
     push:
         machine: true
         steps:
             - attach_workspace:
-                at: ~
+                at: ~/pubsubbeat
             - run: docker push gcr.io/snyk-main/pubsubbeat:${CIRCLE_SHA1}
 workflows:
     version: 2
